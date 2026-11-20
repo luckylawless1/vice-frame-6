@@ -1,5 +1,1 @@
-[
-  { "name": "1-cover.jpg", "query": "?shot=cover&photo=pier&caption=Sunset%20Heist", "w": 1080, "h": 1080 },
-  { "name": "2-editor.jpg", "query": "?shot=editor&photo=boulevard&caption=Boulevard%20Queen", "w": 1280, "h": 720 },
-  { "name": "3-cover.jpg", "query": "?shot=cover&photo=boulevard&caption=Boulevard%20Queen", "w": 1080, "h": 1080 }
-]
+[{"h":720,"name":"1-cover.jpg","query":"?shot=cover&layout=storyboard&size=landscape&grade=neon-night&title=Vice%20Frame%20Six&caption=The%20Las%20Lumen%20Story&photos=boardwalk-pastel-suit,ocean-drive-sunset,casino-strip-night,neon-marina","w":1280},{"h":720,"name":"2-editor.jpg","query":"?shot=editor&layout=cover-star&size=landscape&grade=vice-sunset&photo=ocean-drive-sunset&caption=Boulevard%20Queen","w":1280},{"h":1280,"name":"3-cover.jpg","query":"?shot=cover&layout=masthead-hero&size=portrait&grade=vice-sunset&photo=ocean-drive-sunset&title=Vice%20Frame&caption=Sunset%20Heist","w":1024},{"h":1080,"name":"4-cover.jpg","query":"?shot=cover&layout=cover-closeup&size=square&grade=duotone-heat&photos=boardwalk-pastel-suit,neon-marina,casino-strip-night&caption=Palm%20Royale","w":1080}]

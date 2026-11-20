@@ -1,40 +1,83 @@
-// A working gta6-cover-art-01 entry (Node 22, standard library only): the app is this directory's app/ folder, plain
-// static files a desktop browser loads offline (app/index.html and its ES modules, no library and no network
-// request), and the program hands it in. It copies app/ and screenshots/ from beside this file to /output and writes
-// /output/dossier.json, the summary the judge reads, with the vendored make.fun library. Only the plumbing, not the
-// cover art the bounty asks for: Cover Snap, a plain one-photo square cover with a sunset tint and a bold caption,
-// exported as a 1080 x 1080 PNG. Its two sample photos (app/samples/) were made for make.fun with an image model and
-// are free to use. Build your own GTA-style cover maker in its place, put your 3 or 4 PNG or JPEG screenshots in
-// screenshots/ (the first by name is the cover) and run it.
+// VICE FRAME 6 — hand-in program for the gta6-cover-art-01 bounty.
 //
-// Serve it locally with `node serve.ts`, then open http://localhost:8080.
-// Outside the grader's container, MAKEFUN_OUTPUT_DIR stands in for /output:
-//   mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
+// What this file does, in order:
+//   1. Works out where the finished entry should land. The grader sets
+//      MAKEFUN_OUTPUT_DIR; a human running this by hand usually does too.
+//      An empty value counts as "not set" and falls back to /output.
+//   2. Mirrors the two payload folders of this repository — app/ (the
+//      offline cover-art maker) and screenshots/ (its four captures) —
+//      into that output folder.
+//   3. Asks the vendored make.fun library to summarise the output folder
+//      as a dossier, using the competition's published caps, and stores
+//      the returned bytes as dossier.json.
+// Any failure along the way aborts with a non-zero exit code and a
+// message naming the step that broke, so a broken hand-in is loud
+// instead of silently empty.
+//
+// Run it with:  mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
 
 import { cpSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildDossier } from './vendor/makefun-app.ts';
 
-const here = fileURLToPath(new URL('.', import.meta.url));
-const out = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
+const CAPS_FOR_THIS_BOUNTY = {
+  text_max_bytes: 163840,
+  screenshots: { max: 4, max_bytes: 262144 },
+  app_max_files: 993,
+  app_max_bytes: 50331648,
+  app_path_max_bytes: 1000,
+};
 
-mkdirSync(out, { recursive: true });
-cpSync(join(here, 'app'), join(out, 'app'), { recursive: true });
-mkdirSync(join(out, 'screenshots'), { recursive: true });
-if (existsSync(join(here, 'screenshots'))) cpSync(join(here, 'screenshots'), join(out, 'screenshots'), { recursive: true });
+function fail(step, err) {
+  console.error(`vice-frame-6 hand-in failed at "${step}": ${err && err.message ? err.message : err}`);
+  process.exit(1);
+}
 
-// The scorer's own caps (reference/gate.json): only text_max_bytes shapes the bytes; the others refuse an entry the
-// scorer would refuse (more than 4 screenshots or one over 256 KiB; more than 993 files in app/ or 48 MiB of app
-// files, in all, or a path under app/ over 1000 bytes: app/ counts beside /output's own 1000-entry cap, its
-// screenshots/ and dossier.json).
-writeFileSync(
-  join(out, 'dossier.json'),
-  buildDossier(out, {
-    text_max_bytes: 163840,
-    screenshots: { max: 4, max_bytes: 262144 },
-    app_max_files: 993,
-    app_max_bytes: 50331648,
-    app_path_max_bytes: 1000,
-  }),
-);
+function pickOutputRoot(env) {
+  const fromEnv = env.MAKEFUN_OUTPUT_DIR;
+  if (typeof fromEnv === 'string' && fromEnv.trim() !== '') return fromEnv;
+  return '/output';
+}
+
+function copyPayload(repoRoot, outputRoot) {
+  for (const folder of ['app', 'screenshots']) {
+    const from = join(repoRoot, folder);
+    if (!existsSync(from)) throw new Error(`payload folder is missing: ${from}`);
+    cpSync(from, join(outputRoot, folder), { recursive: true });
+  }
+}
+
+function main() {
+  const repoRoot = dirname(fileURLToPath(import.meta.url));
+  const outputRoot = pickOutputRoot(process.env);
+
+  try {
+    mkdirSync(outputRoot, { recursive: true });
+  } catch (err) {
+    fail('create output directory', err);
+  }
+
+  try {
+    copyPayload(repoRoot, outputRoot);
+  } catch (err) {
+    fail('copy app/ and screenshots/', err);
+  }
+
+  let dossierBytes;
+  try {
+    dossierBytes = buildDossier(outputRoot, CAPS_FOR_THIS_BOUNTY);
+  } catch (err) {
+    fail('build dossier', err);
+  }
+
+  try {
+    writeFileSync(join(outputRoot, 'dossier.json'), dossierBytes);
+  } catch (err) {
+    fail('write dossier.json', err);
+  }
+
+  console.log(`vice-frame-6: entry written to ${outputRoot} (dossier ${dossierBytes.length} bytes)`);
+}
+
+main();
