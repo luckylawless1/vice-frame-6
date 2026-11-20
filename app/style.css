@@ -1,12 +1,83 @@
-html, body { margin: 0; height: 100%; background: #f2f0f4; color: #1d1b22; font: 15px/1.4 system-ui, sans-serif; }
-.app { display: flex; gap: 32px; align-items: center; justify-content: center; height: 100%; padding: 24px; box-sizing: border-box; }
-.controls { display: flex; flex-direction: column; gap: 14px; width: 280px; }
-.controls h1 { margin: 0; font-size: 28px; }
-.controls p { margin: 0; color: #5c5866; }
-label { display: flex; flex-direction: column; gap: 6px; font-weight: 600; }
-input[type=text] { font: inherit; padding: 8px; border: 1px solid #c9c4d1; border-radius: 6px; }
-button { font: inherit; font-weight: 700; padding: 10px; border: 0; border-radius: 6px; background: #1d1b22; color: #fff; cursor: pointer; }
-canvas { width: min(70vh, 60vw); height: min(70vh, 60vw); box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2); }
-body.shot-cover .controls { display: none; }
-body.shot-cover .app { padding: 0; }
-body.shot-cover canvas { width: 100vw; height: 100vh; box-shadow: none; }
+@font-face {
+  font-family: "Anton";
+  src: url("fonts/Anton-Regular.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Archivo Black";
+  src: url("fonts/ArchivoBlack-Regular.ttf") format("truetype");
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: #0d0a18;
+  color: #f4f0ff;
+  font-family: system-ui, "Segoe UI", sans-serif;
+}
+#topbar {
+  display: flex; align-items: baseline; gap: 18px;
+  padding: 12px 20px;
+  background: linear-gradient(90deg, #1b0f33, #3b1150 55%, #07332f);
+  border-bottom: 3px solid #ff2e88;
+}
+.brand { font-family: Anton, sans-serif; font-size: 30px; letter-spacing: 1px; }
+.brand span { color: #19f2c8; }
+.tag { color: #cfc4ee; font-size: 14px; }
+#workspace { display: flex; gap: 18px; padding: 16px 20px; align-items: flex-start; }
+#stage-wrap { flex: 1 1 auto; min-width: 0; text-align: center; }
+#cover {
+  max-width: 100%; max-height: calc(100vh - 150px);
+  background: #000; box-shadow: 0 12px 44px rgba(0,0,0,.65);
+  cursor: grab; touch-action: none;
+}
+#cover:active { cursor: grabbing; }
+#stage-hint { color: #9d92c4; font-size: 13px; }
+#editor {
+  flex: 0 0 320px; max-height: calc(100vh - 130px); overflow-y: auto;
+  background: #171130; border: 1px solid #352a5e; border-radius: 12px;
+  padding: 14px 16px 18px;
+}
+#editor h2 {
+  font-family: Anton, sans-serif; font-weight: normal; letter-spacing: .6px;
+  font-size: 16px; margin: 16px 0 8px; color: #ffd76e;
+}
+#editor h2:first-child { margin-top: 0; }
+#editor label { display: block; font-size: 13px; margin: 7px 0; color: #d9d2f2; }
+#editor input[type="text"] {
+  width: 100%; margin-top: 3px; padding: 7px 9px; border-radius: 7px;
+  border: 1px solid #4a3a80; background: #0f0b22; color: #fff; font-size: 14px;
+}
+#editor input[type="range"] { width: 100%; }
+#thumbs { display: flex; flex-wrap: wrap; gap: 7px; }
+#thumbs img {
+  width: 62px; height: 46px; object-fit: cover; border-radius: 6px;
+  border: 2px solid transparent; cursor: pointer;
+}
+#thumbs img.in-use { border-color: #19f2c8; }
+.upload-btn {
+  display: inline-block !important; margin-top: 9px; padding: 8px 12px;
+  background: #ff2e88; color: #fff !important; border-radius: 8px; cursor: pointer;
+  font-weight: 600;
+}
+.hint { color: #9d92c4; font-size: 12px; line-height: 1.45; }
+.btn-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+.btn-grid button, .wide-btn {
+  background: #241a4a; color: #eee; border: 1px solid #4a3a80;
+  border-radius: 8px; padding: 7px 10px; cursor: pointer; font-size: 13px;
+}
+.btn-grid button.active { background: #ff2e88; border-color: #ff2e88; color: #fff; }
+.wide-btn { width: 100%; margin-top: 7px; }
+.checks label { display: inline-block !important; margin: 3px 10px 3px 0 !important; }
+.export-btn {
+  width: 100%; padding: 11px; margin-top: 8px; border: 0; border-radius: 9px;
+  background: linear-gradient(90deg, #ff2e88, #8a2be2); color: #fff;
+  font-size: 15px; font-weight: 700; cursor: pointer;
+}
+.export-btn.alt { background: linear-gradient(90deg, #0e7d74, #19b8a6); }
+
+/* Screenshot scenes */
+body.shot-cover { background: #000; }
+body.shot-cover #topbar, body.shot-cover #editor, body.shot-cover #stage-hint { display: none; }
+body.shot-cover #workspace { padding: 0; }
+body.shot-cover #cover { max-width: 100vw; max-height: 100vh; box-shadow: none; }
+body.shot-editor #workspace { padding: 10px 14px; }

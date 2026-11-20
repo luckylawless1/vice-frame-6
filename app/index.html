@@ -1,23 +1,71 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cover Snap</title>
-<link rel="stylesheet" href="./style.css">
+<title>VICE FRAME 6 — GTA-Style Cover Art Maker</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-<main class="app">
-  <section class="controls">
-    <h1>Cover Snap</h1>
-    <p>A photo and a caption, made into a square cover.</p>
-    <label>Photo <input id="photo" type="file" accept="image/*"></label>
-    <label>Caption <input id="caption" type="text" maxlength="40" value="Sunset Heist"></label>
-    <button id="export" type="button">Export PNG 1080 x 1080</button>
-    <p id="status" role="status"></p>
+<header id="topbar">
+  <div class="brand">VICE <span>FRAME 6</span></div>
+  <div class="tag">Turn any photo into GTA-style cover art — offline, no uploads.</div>
+</header>
+<main id="workspace">
+  <section id="stage-wrap">
+    <canvas id="cover" width="1080" height="1080"></canvas>
+    <p id="stage-hint">Click a panel to select it · drag to pan · wheel to zoom · double-click resets framing</p>
   </section>
-  <canvas id="cover" width="1080" height="1080" aria-label="The cover"></canvas>
+  <aside id="editor">
+    <h2>Photos</h2>
+    <div id="thumbs"></div>
+    <label class="upload-btn">＋ Add your photos
+      <input id="file-input" type="file" accept="image/*" multiple hidden>
+    </label>
+    <p class="hint">…or drag &amp; drop photos onto the cover. Click a thumbnail to put it in the selected panel.</p>
+
+    <h2>Layout</h2>
+    <div id="layout-list" class="btn-grid"></div>
+
+    <h2>Size</h2>
+    <div id="size-list" class="btn-grid">
+      <button data-size="square">1080 × 1080</button>
+      <button data-size="portrait">1080 × 1350</button>
+      <button data-size="landscape">1920 × 1080</button>
+    </div>
+
+    <h2>Words</h2>
+    <label>Title <input id="in-title" type="text" value="VICE FRAME"></label>
+    <label>Tagline <input id="in-tagline" type="text" value="Six stars over Las Lumen"></label>
+    <label>Caption <input id="in-caption" type="text" value="Sunset Heist"></label>
+    <label>Billing block <input id="in-billing" type="text" value="Las Lumen Pictures presents a Vice Frame production — starring The Driver · The Fixer · The Siren"></label>
+    <label>Selected panel role tag <input id="in-role" type="text" value="THE DRIVER"></label>
+    <label>Selected scene caption (Storyboard) <input id="in-scene" type="text" value="THE MEET"></label>
+
+    <h2>Grade — selected panel</h2>
+    <div id="grade-list" class="btn-grid"></div>
+    <button id="grade-all" class="wide-btn">Apply this grade to all panels</button>
+
+    <h2>Framing</h2>
+    <label>Zoom <input id="in-zoom" type="range" min="1" max="3" step="0.01" value="1"></label>
+    <button id="reset-frame" class="wide-btn">Reset selected panel framing</button>
+
+    <h2>Dressing</h2>
+    <div class="checks">
+      <label><input type="checkbox" id="ck-palm" checked> Neon palm</label>
+      <label><input type="checkbox" id="ck-burst" checked> “NEW!” burst</label>
+      <label><input type="checkbox" id="ck-sun" checked> Sun badge</label>
+      <label><input type="checkbox" id="ck-seal" checked> Cover seal</label>
+      <label><input type="checkbox" id="ck-grain" checked> Film grain</label>
+    </div>
+
+    <h2>Export</h2>
+    <button id="export-one" class="export-btn">Export PNG (current size)</button>
+    <button id="export-all" class="export-btn alt">Export all 3 sizes</button>
+    <p class="hint">Exports are rendered fresh at full resolution from your photos on this machine.</p>
+  </aside>
 </main>
-<script type="module" src="./src/main.js"></script>
+<script type="module" src="src/main.js"></script>
 </body>
 </html>
